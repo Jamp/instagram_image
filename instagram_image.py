@@ -1,5 +1,5 @@
 rom os import environ, unlink
-from os.path import join
+from os.path import join, exists
 from random import choice
 from string import ascii_lowercase, digits
 from PIL import Image
@@ -9,7 +9,7 @@ from boto3 import client
 __IMAGE_SIZE__ = (256, 256)
 __AVATAR_SIZE__ = (32, 32)
 
-__DIRECTORY_BASE = '/tmp/'
+__DIRECTORY_BASE__ = '/tmp/'
 __HEADERS__ = {
     'User-Agent': 'Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/_BuildID_) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36'
 }
@@ -41,15 +41,14 @@ def get_avatar(url_image, id_user):
     if original_uri:
         compressed_uri = __optimize_image__(original_uri, 'avatar')
         
-        unlink(original_uri)
+        __cleanup__(original_uri)
 
     if  compressed_uri:
         url_uploaded = __upload_image__(compressed_uri, id_user)
         
-        unlink(compressed_uri)
+        __cleanup__(compressed_uri)
     
     return url_uploaded
-
 
 
 def __download_image__(image_url):
@@ -144,4 +143,11 @@ def __random_name__(size=32):
 
 
 def __get_path__(filename):
-    return join(__DIRECTORY_BASE, filename)
+    return join(__DIRECTORY_BASE__, filename)
+
+
+def __cleanup__(image_name):
+    image_path = __get_path__(image_name)
+
+    if exists(image_path):
+        unlink(image_path)
