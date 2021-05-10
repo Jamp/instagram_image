@@ -23,12 +23,12 @@ def get_image(url_image, id_post):
     if original_uri:
         compressed_uri = __optimize_image__(original_uri)
         
-        unlink(original_uri)
+        __cleanup__(original_uri)
 
     if  compressed_uri:
         url_uploaded = __upload_image__(compressed_uri, id_post)
         
-        unlink(compressed_uri)
+        __cleanup__(compressed_uri)
     
     return url_uploaded
         
